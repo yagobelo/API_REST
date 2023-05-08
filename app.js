@@ -3,6 +3,15 @@ const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+app.use(express.json());
+
+const usersRoutes = require("./src/routes/usersRoutes");
+app.use("/user", usersRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Rota Inicial!");
+});
+
 const DB_USER = process.env.DB_USER;
 const DB_PASSWORD = process.env.DB_PASSWORD;
 const DB_NAME = process.env.DB_NAME;
