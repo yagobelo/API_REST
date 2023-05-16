@@ -2,57 +2,6 @@ const User = require("../models/User");
 
 const createUser = async (req, res) => {
   const { userName, email, password } = req.body;
-
-  const verifyInvalidNewUser = [];
-
-  if (!userName) {
-    verifyInvalidNewUser.push("Nome de usuario obrigatório!");
-  }
-  if (userName.length < 4) {
-    verifyInvalidNewUser.push(
-      "Nome de usuario deve conter no minimo 4 caracteres!"
-    );
-  }
-  const existNameUser = await User.findOne({ userName: userName });
-  if (existNameUser) {
-    verifyInvalidNewUser.push("Nome de usuario ja existe!");
-  }
-
-  if (!email) {
-    verifyInvalidNewUser.push("Email obrigatório!");
-  }
-  const existEmailUser = await User.findOne({ email: email });
-  if (existEmailUser) {
-    verifyInvalidNewUser.push("Email de usuario ja existe!");
-  }
-
-  if (!password) {
-    verifyInvalidNewUser.push("Senha obrigatória!");
-  }
-  if (password.length < 8) {
-    verifyInvalidNewUser.push("Senha muito curta!");
-  }
-  const passwordContainUpperCase = /[A-Z]/.test(password);
-  if (!passwordContainUpperCase) {
-    verifyInvalidNewUser.push("Senha fraca, deve conter letra maiúscula!");
-  }
-  const passwordContainLowerCase = /[a-z]/.test(password);
-  if (!passwordContainLowerCase) {
-    verifyInvalidNewUser.push("Senha fraca, deve conter letra minúscula!");
-  }
-  const passwordContainNumber = /\d/.test(password);
-  if (!passwordContainNumber) {
-    verifyInvalidNewUser.push("Senha fraca, deve conter número!");
-  }
-  const passwordContainSpecialCharacter =
-    /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-  if (!passwordContainSpecialCharacter) {
-    verifyInvalidNewUser.push("Senha fraca, deve conter caractere especial!");
-  }
-
-  if (verifyInvalidNewUser.length > 0) {
-    return res.json({ message: verifyInvalidNewUser });
-  }
   try {
     const newUser = {
       userName,
@@ -60,7 +9,7 @@ const createUser = async (req, res) => {
       password,
     };
     User.create(newUser);
-    res.status(201).json(newUser, -password);
+    res.status(201).json(newUser);
   } catch (error) {
     res.status(400).json("Erro interno ao criar novo usuario");
     console.log(error);
@@ -92,68 +41,16 @@ const readUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const email = req.query.email;
   const { userName, password } = req.body;
-  const verifyInvalidNewUser = [];
-
-  if (!userName && !password) {
-    verifyInvalidNewUser.push(
-      "Digite um username ou uma senha para fazer alteração!"
-    );
-  }
-  if (userName) {
-    const existNameUser = await User.findOne({ userName: userName });
-    if (existNameUser) {
-      verifyInvalidNewUser.push("Nome de usuario ja existe!");
-    }
-    if (userName.length < 4) {
-      verifyInvalidNewUser.push(
-        "Nome de usuario deve conter no minimo 4 caracteres!"
-      );
-    }
-  }
-
-  if (password) {
-    const lastPassword = await User.findOne({ password: password });
-    if (lastPassword) {
-      verifyInvalidNewUser.push(
-        "Senha não pode ser igual a última cadastrada!"
-      );
-    }
-    if (password.length < 8) {
-      verifyInvalidNewUser.push("Senha muito curta!");
-    }
-    const passwordContainUpperCase = /[A-Z]/.test(password);
-    if (!passwordContainUpperCase) {
-      verifyInvalidNewUser.push("Senha fraca, deve conter letra maiúscula!");
-    }
-    const passwordContainLowerCase = /[a-z]/.test(password);
-    if (!passwordContainLowerCase) {
-      verifyInvalidNewUser.push("Senha fraca, deve conter letra minúscula!");
-    }
-    const passwordContainNumber = /\d/.test(password);
-    if (!passwordContainNumber) {
-      verifyInvalidNewUser.push("Senha fraca, deve conter número!");
-    }
-    const passwordContainSpecialCharacter =
-      /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-    if (!passwordContainSpecialCharacter) {
-      verifyInvalidNewUser.push("Senha fraca, deve conter caractere especial!");
-    }
-
-    if (verifyInvalidNewUser.length > 0) {
-      return res.json({ message: verifyInvalidNewUser });
-    }
-
-    try {
-      const user = {
-        userName,
-        password,
-      };
-      await User.updateOne({ email: email }, user);
-      res.status(200).json(user);
-    } catch (error) {
-      res.status(400).json({ message: "Erro interno ao atualizar usuario!" });
-      console.log(error);
-    }
+  try {
+    const user = {
+      userName,
+      password,
+    };
+    await User.updateOne({ email: email }, user);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400).json({ message: "Erro interno ao atualizar usuario!" });
+    console.log(error);
   }
 };
 
