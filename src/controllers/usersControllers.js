@@ -60,9 +60,9 @@ const createUser = async (req, res) => {
       password,
     };
     User.create(newUser);
-    res.json(newUser);
+    res.status(201).json(newUser);
   } catch (error) {
-    res.json("Erro interno ao criar novo usuario");
+    res.status(400).json("Erro interno ao criar novo usuario");
     console.log(error);
   }
 };
@@ -73,18 +73,18 @@ const readUser = async (req, res) => {
     if (!userName) {
       const allUsers = await User.find();
       if (!allUsers) {
-        return res.json("Nenhum usuario encontrado!");
+        return res.status(404).json("Nenhum usuario encontrado!");
       }
-      res.json(allUsers);
+      res.status(200).json(allUsers);
     } else {
       const userByUsername = await User.findOne({ userName: userName });
       if (!userByUsername) {
         return res.json("Usuario não encontrado!");
       }
-      res.json(userByUsername);
+      res.status(200).json(userByUsername);
     }
   } catch (error) {
-    res.json("Erro ao buscar usuarios");
+    res.status(404).json("Erro ao buscar usuarios");
     console.log(error);
   }
 };
@@ -144,9 +144,9 @@ const updateUser = async (req, res) => {
         password,
       };
       await User.updateOne({ email: email }, user);
-      res.json(user);
+      res.status(200).json(user);
     } catch (error) {
-      res.json("Erro interno ao atualizar usuario!");
+      res.status(400).json("Erro interno ao atualizar usuario!");
       console.log(error);
     }
   }
@@ -157,12 +157,12 @@ const deleteUser = async (req, res) => {
     const email = req.query.email;
     const existUser = await User.findOne({ email: email });
     if (!existUser) {
-      return res.json("Usuario não existe!");
+      return res.status(404).json("Usuario não existe!");
     }
     await User.deleteOne({ email: email });
-    res.json("Usuario deletado!");
+    res.status(200).json("Usuario deletado!");
   } catch (error) {
-    res.json("Erro interno ao deletar usuario!");
+    res.status(400).json("Erro interno ao deletar usuario!");
     console.log(error);
   }
 };
