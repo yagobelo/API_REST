@@ -51,7 +51,7 @@ const createUser = async (req, res) => {
   }
 
   if (verifyInvalidNewUser.length > 0) {
-    return res.json(verifyInvalidNewUser);
+    return res.json({ message: verifyInvalidNewUser });
   }
   try {
     const newUser = {
@@ -60,7 +60,7 @@ const createUser = async (req, res) => {
       password,
     };
     User.create(newUser);
-    res.status(201).json(newUser);
+    res.status(201).json(newUser, -password);
   } catch (error) {
     res.status(400).json("Erro interno ao criar novo usuario");
     console.log(error);
@@ -73,18 +73,18 @@ const readUser = async (req, res) => {
     if (!userName) {
       const allUsers = await User.find();
       if (!allUsers) {
-        return res.status(404).json("Nenhum usuario encontrado!");
+        return res.status(404).json({ message: "Nenhum usuario encontrado!" });
       }
       res.status(200).json(allUsers);
     } else {
       const userByUsername = await User.findOne({ userName: userName });
       if (!userByUsername) {
-        return res.json("Usuario não encontrado!");
+        return res.json({ message: "Usuario não encontrado!" });
       }
       res.status(200).json(userByUsername);
     }
   } catch (error) {
-    res.status(404).json("Erro ao buscar usuarios");
+    res.status(404).json({ message: "Erro ao buscar usuarios" });
     console.log(error);
   }
 };
@@ -94,6 +94,11 @@ const updateUser = async (req, res) => {
   const { userName, password } = req.body;
   const verifyInvalidNewUser = [];
 
+  if (!userName && !password) {
+    verifyInvalidNewUser.push(
+      "Digite um username ou uma senha para fazer alteração!"
+    );
+  }
   if (userName) {
     const existNameUser = await User.findOne({ userName: userName });
     if (existNameUser) {
@@ -135,7 +140,7 @@ const updateUser = async (req, res) => {
     }
 
     if (verifyInvalidNewUser.length > 0) {
-      return res.json(verifyInvalidNewUser);
+      return res.json({ message: verifyInvalidNewUser });
     }
 
     try {
@@ -146,7 +151,7 @@ const updateUser = async (req, res) => {
       await User.updateOne({ email: email }, user);
       res.status(200).json(user);
     } catch (error) {
-      res.status(400).json("Erro interno ao atualizar usuario!");
+      res.status(400).json({ message: "Erro interno ao atualizar usuario!" });
       console.log(error);
     }
   }
@@ -157,12 +162,12 @@ const deleteUser = async (req, res) => {
     const email = req.query.email;
     const existUser = await User.findOne({ email: email });
     if (!existUser) {
-      return res.status(404).json("Usuario não existe!");
+      return res.status(404).json({ message: "Usuario não existe!" });
     }
     await User.deleteOne({ email: email });
-    res.status(200).json("Usuario deletado!");
+    res.status(200).json({ message: "Usuario deletado!" });
   } catch (error) {
-    res.status(400).json("Erro interno ao deletar usuario!");
+    res.status(400).json({ message: "Erro interno ao deletar usuario!" });
     console.log(error);
   }
 };
