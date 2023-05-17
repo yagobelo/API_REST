@@ -9,7 +9,9 @@ const createUser = async (req, res) => {
       password,
     };
     User.create(newUser);
-    res.status(201).json(newUser);
+    res
+      .status(201)
+      .json({ message: "Novo usuario criado com sucesso!", newUser });
   } catch (error) {
     res.status(400).json("Erro interno ao criar novo usuario");
     console.log(error);
@@ -24,7 +26,7 @@ const readUser = async (req, res) => {
       if (!allUsers) {
         return res.status(404).json({ message: "Nenhum usuario encontrado!" });
       }
-      res.status(200).json(allUsers);
+      res.status(200).json({ message: "Lista todos os usuarios:", allUsers });
     } else {
       const userByUsername = await User.findOne({ userName: userName });
       if (!userByUsername) {
@@ -47,7 +49,7 @@ const updateUser = async (req, res) => {
       password,
     };
     await User.updateOne({ email: email }, user);
-    res.status(200).json(user);
+    res.status(200).json({ message: "Alterações feitas:", user });
   } catch (error) {
     res.status(400).json({ message: "Erro interno ao atualizar usuario!" });
     console.log(error);

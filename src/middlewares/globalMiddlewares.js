@@ -48,8 +48,9 @@ const validCreateNewUser = async (req, res, next) => {
   if (existEmailUser) {
     verifyInvalidNewUser.push("Email de usuario ja existe!");
   }
-
-  validPassword(password, verifyInvalidNewUser);
+  if (password) {
+    validPassword(password, verifyInvalidNewUser);
+  }
 
   if (verifyInvalidNewUser.length > 0) {
     return res.json({ message: verifyInvalidNewUser });
@@ -59,7 +60,20 @@ const validCreateNewUser = async (req, res, next) => {
 
 const validUpdateUser = async (req, res, next) => {
   const email = req.query.email;
+  const existUser = await User.findOne({ email: email });
+
+  if (!email) {
+    return res.status(400).json({ message: "Email invalido!" });
+  } else {
+    if (!existUser) {
+      return res.status(404).json({
+        message: "Não existe nenhum usuario cadastrado com este email!",
+      });
+    }
+  }
+
   const { userName, password } = req.body;
+
   const verifyInvalidNewUser = [];
 
   if (!userName && !password) {
@@ -78,8 +92,12 @@ const validUpdateUser = async (req, res, next) => {
       );
     }
   }
-
-  validPassword(password, verifyInvalidNewUser);
+  if (password) {
+    validPassword(password, verifyInvalidNewUser);
+    if (existUser.password == password) {
+      verifyInvalidNewUser.push("A senha não pode ser igual a anterior!");
+    }
+  }
 
   if (verifyInvalidNewUser.length > 0) {
     return res.json({ message: verifyInvalidNewUser });
