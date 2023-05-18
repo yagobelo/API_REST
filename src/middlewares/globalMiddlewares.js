@@ -1,6 +1,6 @@
-const User = require("../models/User");
+import User from "../models/User.js";
 
-const validPassword = async (password, verifyInvalidNewUser) => {
+export const validPassword = async (password, verifyInvalidNewUser) => {
   if (password.length < 8) {
     verifyInvalidNewUser.push("Senha muito curta!");
   }
@@ -23,86 +23,98 @@ const validPassword = async (password, verifyInvalidNewUser) => {
   }
 };
 
-const validCreateNewUser = async (req, res, next) => {
-  const { userName, email, password } = req.body;
+export const validCreateNewUser = async (req, res, next) => {
+  try {
+    const { userName, email, password } = req.body;
 
-  const verifyInvalidNewUser = [];
+    const verifyInvalidNewUser = [];
 
-  if (!userName) {
-    verifyInvalidNewUser.push("Nome de usuario obrigatório!");
-  }
-  if (userName.length < 4) {
-    verifyInvalidNewUser.push(
-      "Nome de usuario deve conter no minimo 4 caracteres!"
-    );
-  }
-  const existNameUser = await User.findOne({ userName: userName });
-  if (existNameUser) {
-    verifyInvalidNewUser.push("Nome de usuario ja existe!");
-  }
-
-  if (!email) {
-    verifyInvalidNewUser.push("Email obrigatório!");
-  }
-  const existEmailUser = await User.findOne({ email: email });
-  if (existEmailUser) {
-    verifyInvalidNewUser.push("Email de usuario ja existe!");
-  }
-  if (password) {
-    validPassword(password, verifyInvalidNewUser);
-  }
-
-  if (verifyInvalidNewUser.length > 0) {
-    return res.json({ message: verifyInvalidNewUser });
-  }
-  next();
-};
-
-const validUpdateUser = async (req, res, next) => {
-  const email = req.query.email;
-  const existUser = await User.findOne({ email: email });
-
-  if (!email) {
-    return res.status(400).json({ message: "Email invalido!" });
-  } else {
-    if (!existUser) {
-      return res.status(404).json({
-        message: "Não existe nenhum usuario cadastrado com este email!",
-      });
-    }
-  }
-
-  const { userName, password } = req.body;
-
-  const verifyInvalidNewUser = [];
-
-  if (!userName && !password) {
-    verifyInvalidNewUser.push(
-      "Digite um username ou uma senha para fazer alteração!"
-    );
-  }
-  if (userName) {
-    const existNameUser = await User.findOne({ userName: userName });
-    if (existNameUser) {
-      verifyInvalidNewUser.push("Nome de usuario ja existe!");
+    if (!userName) {
+      verifyInvalidNewUser.push("Nome de usuario obrigatório!");
     }
     if (userName.length < 4) {
       verifyInvalidNewUser.push(
         "Nome de usuario deve conter no minimo 4 caracteres!"
       );
     }
-  }
-  if (password) {
-    validPassword(password, verifyInvalidNewUser);
-    if (existUser.password == password) {
-      verifyInvalidNewUser.push("A senha não pode ser igual a anterior!");
+    const existNameUser = await User.findOne({ userName: userName });
+    if (existNameUser) {
+      verifyInvalidNewUser.push("Nome de usuario ja existe!");
     }
-  }
 
-  if (verifyInvalidNewUser.length > 0) {
-    return res.json({ message: verifyInvalidNewUser });
+    if (!email) {
+      verifyInvalidNewUser.push("Email obrigatório!");
+    }
+    const existEmailUser = await User.findOne({ email: email });
+    if (existEmailUser) {
+      verifyInvalidNewUser.push("Email de usuario ja existe!");
+    }
+    if (password) {
+      validPassword(password, verifyInvalidNewUser);
+    }
+
+    if (verifyInvalidNewUser.length > 0) {
+      return res.json({ message: verifyInvalidNewUser });
+    }
+    next();
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "erro na validação de criação de usuario!" });
+    console.log(err);
   }
-  next();
 };
 
-module.exports = { validCreateNewUser, validUpdateUser };
+export const validUpdateUser = async (req, res, next) => {
+  try {
+    const email = req.query.email;
+    const existUser = await User.findOne({ email: email });
+
+    if (!email) {
+      return res.status(400).json({ message: "Email invalido!" });
+    } else {
+      if (!existUser) {
+        return res.status(404).json({
+          message: "Não existe nenhum usuario cadastrado com este email!",
+        });
+      }
+    }
+
+    const { userName, password } = req.body;
+
+    const verifyInvalidNewUser = [];
+
+    if (!userName && !password) {
+      verifyInvalidNewUser.push(
+        "Digite um username ou uma senha para fazer alteração!"
+      );
+    }
+    if (userName) {
+      const existNameUser = await User.findOne({ userName: userName });
+      if (existNameUser) {
+        verifyInvalidNewUser.push("Nome de usuario ja existe!");
+      }
+      if (userName.length < 4) {
+        verifyInvalidNewUser.push(
+          "Nome de usuario deve conter no minimo 4 caracteres!"
+        );
+      }
+    }
+    if (password) {
+      validPassword(password, verifyInvalidNewUser);
+      if (existUser.password == password) {
+        verifyInvalidNewUser.push("A senha não pode ser igual a anterior!");
+      }
+    }
+
+    if (verifyInvalidNewUser.length > 0) {
+      return res.json({ message: verifyInvalidNewUser });
+    }
+    next();
+  } catch (err) {
+    res.status(500).json({
+      message: "erro na validação de atualização de dados de usuario!",
+    });
+    console.log(err);
+  }
+};

@@ -1,8 +1,8 @@
-const User = require("../models/User");
+import User from "../models/User.js";
 
 const createUser = async (req, res) => {
-  const { userName, email, password } = req.body;
   try {
+    const { userName, email, password } = req.body;
     const newUser = {
       userName,
       email,
@@ -19,8 +19,8 @@ const createUser = async (req, res) => {
 };
 
 const readUser = async (req, res) => {
-  const userName = req.query.userName;
   try {
+    const userName = req.query.userName;
     if (!userName) {
       const allUsers = await User.find();
       if (!allUsers) {
@@ -41,9 +41,9 @@ const readUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const email = req.query.email;
-  const { userName, password } = req.body;
   try {
+    const email = req.query.email;
+    const { userName, password } = req.body;
     const user = {
       userName,
       password,
@@ -71,4 +71,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, readUser, updateUser, deleteUser };
+export default { createUser, readUser, updateUser, deleteUser };

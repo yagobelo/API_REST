@@ -1,12 +1,14 @@
-const express = require("express");
-const app = express();
-const connectDatabase = require("./src/database/db");
-require("dotenv").config();
+import express from "express";
+import connectDatabase from "./src/database/db.js";
+import dotenv from "dotenv";
+dotenv.config();
 
+const app = express();
 connectDatabase();
+
 app.use(express.json());
 
-const usersRoutes = require("./src/routes/usersRoutes");
+import usersRoutes from "./src/routes/usersRoutes.js";
 app.use("/user", usersRoutes);
 
 app.get("/", (req, res) => {
