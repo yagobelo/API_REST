@@ -8,7 +8,8 @@ import {
 const router = express.Router();
 
 router.post("/", validCreateNewUser, userController.createUser);
-router.get("/", userController.readUser);
+router.get("/", userController.findAllUsers);
+router.get("/:id", userController.findUserById);
 router.patch("/", validUpdateUser, userController.updateUser);
 router.delete("/", userController.deleteUser);
 

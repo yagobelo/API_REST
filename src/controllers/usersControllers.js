@@ -8,32 +8,34 @@ const createUser = async (req, res) => {
       email,
       password,
     };
-    User.create(newUser);
+    await User.create(newUser);
+    const userCreated = { UserName: newUser.userName, Email: newUser.email };
     res
       .status(201)
-      .json({ message: "Novo usuario criado com sucesso!", newUser });
+      .json({ message: "Novo usuario criado com sucesso!", userCreated });
   } catch (error) {
     res.status(400).json("Erro interno ao criar novo usuario");
     console.log(error);
   }
 };
 
-const readUser = async (req, res) => {
+const findAllUsers = async (req, res) => {
   try {
-    const userName = req.query.userName;
-    if (!userName) {
-      const allUsers = await User.find();
-      if (!allUsers) {
-        return res.status(404).json({ message: "Nenhum usuario encontrado!" });
-      }
-      res.status(200).json({ message: "Lista todos os usuarios:", allUsers });
-    } else {
-      const userByUsername = await User.findOne({ userName: userName });
-      if (!userByUsername) {
-        return res.json({ message: "Usuario não encontrado!" });
-      }
-      res.status(200).json(userByUsername);
+    const allUsers = await User.find();
+    if (!allUsers) {
+      return res.status(404).json({ message: "Nenhum usuario encontrado!" });
     }
+    res.status(200).json({ message: "Lista de todos os usuarios:", allUsers });
+  } catch (error) {
+    res.status(404).json({ message: "Erro ao buscar usuarios" });
+    console.log(error);
+  }
+};
+
+const findUserById = async (req, res) => {
+  try {
+    const userFindById = await User.findOne({ _id: req.params.id });
+    res.status(200).json(userFindById);
   } catch (error) {
     res.status(404).json({ message: "Erro ao buscar usuarios" });
     console.log(error);
@@ -42,13 +44,13 @@ const readUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const email = req.query.email;
+    const id = req.params.id;
     const { userName, password } = req.body;
     const user = {
       userName,
       password,
     };
-    await User.updateOne({ email: email }, user);
+    await User.updateOne({ _id: id }, user);
     res.status(200).json({ message: "Alterações feitas:", user });
   } catch (error) {
     res.status(400).json({ message: "Erro interno ao atualizar usuario!" });
@@ -71,4 +73,10 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export default { createUser, readUser, updateUser, deleteUser };
+export default {
+  createUser,
+  findAllUsers,
+  findUserById,
+  updateUser,
+  deleteUser,
+};

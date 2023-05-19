@@ -67,11 +67,11 @@ export const validCreateNewUser = async (req, res, next) => {
 
 export const validUpdateUser = async (req, res, next) => {
   try {
-    const email = req.query.email;
-    const existUser = await User.findOne({ email: email });
+    const id = req.params.id;
+    const existUser = await User.findOne({ _id: id });
 
     if (!email) {
-      return res.status(400).json({ message: "Email invalido!" });
+      return res.status(400).json({ message: "ID do usuario invalido!" });
     } else {
       if (!existUser) {
         return res.status(404).json({
