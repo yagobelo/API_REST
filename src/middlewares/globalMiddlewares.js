@@ -70,7 +70,7 @@ export const validUpdateUser = async (req, res, next) => {
     const id = req.params.id;
     const existUser = await User.findOne({ _id: id });
 
-    if (!email) {
+    if (!id) {
       return res.status(400).json({ message: "ID do usuario invalido!" });
     } else {
       if (!existUser) {
