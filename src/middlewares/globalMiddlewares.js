@@ -118,3 +118,30 @@ export const validUpdateUser = async (req, res, next) => {
     console.log(err);
   }
 };
+
+export const validCreateNews = (req, res, next) => {
+  const { title, description, banner } = req.body;
+  const verifyInvalidNewNews = [];
+
+  if (!title) {
+    verifyInvalidNewNews.push("Titulo é obrigatório!");
+  }
+  if (title.length < 4) {
+    verifyInvalidNewNews.push(
+      "Tamanho do titulo deve ter no minimo 4 caracteres!"
+    );
+  }
+
+  if (!description) {
+    verifyInvalidNewNews.push("Descrição é obrigatório!");
+  }
+
+  if (!banner) {
+    verifyInvalidNewNews.push("Banner é obrigatório!");
+  }
+
+  if (verifyInvalidNewNews.length > 0) {
+    return res.status(400).json(verifyInvalidNewNews);
+  }
+  next();
+};
