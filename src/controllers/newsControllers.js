@@ -2,6 +2,24 @@ import News from "../models/News.js";
 
 const createNews = async (req, res) => {
   try {
+    const { authorization } = req.headers;
+    console.log(authorization);
+
+    if (!authorization) {
+      return res.send(401);
+    }
+
+    const parts = authorization.split(" ");
+    const [schema, token] = parts;
+
+    if (parts.length !== 2) {
+      res.send(401);
+    }
+
+    if (schema !== "Bearer") {
+      return res.send(401);
+    }
+
     const { title, description, banner } = req.body;
     const newNews = {
       title,
