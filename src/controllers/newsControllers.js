@@ -83,4 +83,31 @@ const findAllNews = async (req, res) => {
   }
 };
 
-export default { createNews, findAllNews };
+const topNews = async (req, res) => {
+  try {
+    const news = await News.findOne().sort({ _id: -1 }).populate("user");
+
+    if (!news) {
+      res
+        .status(400)
+        .json({ message: "Não foi possivel encontrar a notícia!" });
+    }
+
+    res.status(200).send({
+      news: {
+        id: news._id,
+        title: news.title,
+        description: news.description,
+        banner: news.banner,
+        likes: news.likes,
+        comments: news.comments,
+        userName: news.user.userName,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Erro interno ao buscar notícia!" });
+    console.log(error);
+  }
+};
+
+export default { createNews, findAllNews, topNews };
