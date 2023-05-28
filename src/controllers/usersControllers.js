@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 
-const createUser = async (req, res) => {
+export const createUser = async (req, res) => {
   try {
     const { userName, email, password } = req.body;
     const newUser = {
@@ -19,7 +19,7 @@ const createUser = async (req, res) => {
   }
 };
 
-const findAllUsers = async (req, res) => {
+export const findAllUsers = async (req, res) => {
   try {
     const allUsers = await User.find();
     if (!allUsers) {
@@ -32,7 +32,7 @@ const findAllUsers = async (req, res) => {
   }
 };
 
-const findUserById = async (req, res) => {
+export const findUserById = async (req, res) => {
   try {
     const userFindById = await User.findOne({ _id: req.params.id });
     res.status(200).json(userFindById);
@@ -42,7 +42,7 @@ const findUserById = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   try {
     const id = req.params.id;
     const { userName, password } = req.body;
@@ -58,7 +58,7 @@ const updateUser = async (req, res) => {
   }
 };
 
-const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   try {
     const email = req.query.email;
     const existUser = await User.findOne({ email: email });
@@ -71,12 +71,4 @@ const deleteUser = async (req, res) => {
     res.status(400).json({ message: "Erro interno ao deletar usuario!" });
     console.log(error);
   }
-};
-
-export default {
-  createUser,
-  findAllUsers,
-  findUserById,
-  updateUser,
-  deleteUser,
 };

@@ -1,6 +1,6 @@
 import News from "../models/News.js";
 
-const createNews = async (req, res) => {
+export const createNews = async (req, res) => {
   try {
     const { title, description, banner } = req.body;
     const newNews = {
@@ -22,7 +22,7 @@ const createNews = async (req, res) => {
   }
 };
 
-const findAllNews = async (req, res) => {
+export const findAllNews = async (req, res) => {
   try {
     let { limit, offset } = req.query;
     limit = Number(limit);
@@ -83,7 +83,7 @@ const findAllNews = async (req, res) => {
   }
 };
 
-const topNews = async (req, res) => {
+export const topNews = async (req, res) => {
   try {
     const news = await News.findOne().sort({ _id: -1 }).populate("user");
 
@@ -110,4 +110,22 @@ const topNews = async (req, res) => {
   }
 };
 
-export default { createNews, findAllNews, topNews };
+export const findNewsById = async (req, res) => {
+  try {
+    const news = await News.findOne({ _id: req.params.id }).populate("user");
+    res.status(200).json({
+      news: {
+        id: news._id,
+        title: news.title,
+        description: news.description,
+        banner: news.banner,
+        likes: news.likes,
+        comments: news.comments,
+        userName: news.user.userName,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Erro interno ao buscar notícia!" });
+    console.log(error);
+  }
+};

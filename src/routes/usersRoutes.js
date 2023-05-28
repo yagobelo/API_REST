@@ -1,5 +1,11 @@
 import express from "express";
-import userController from "../controllers/usersControllers.js";
+import {
+  createUser,
+  findAllUsers,
+  findUserById,
+  updateUser,
+  deleteUser,
+} from "../controllers/usersControllers.js";
 import {
   validCreateNewUser,
   validUpdateUser,
@@ -7,10 +13,10 @@ import {
 
 const router = express.Router();
 
-router.post("/", validCreateNewUser, userController.createUser);
-router.get("/", userController.findAllUsers);
-router.get("/:id", userController.findUserById);
-router.patch("/", validUpdateUser, userController.updateUser);
-router.delete("/", userController.deleteUser);
+router.post("/", validCreateNewUser, createUser);
+router.get("/", findAllUsers);
+router.get("/:id", findUserById);
+router.patch("/", validUpdateUser, updateUser);
+router.delete("/", deleteUser);
 
 export default router;
