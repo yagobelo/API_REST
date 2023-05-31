@@ -161,3 +161,27 @@ export const findNewsByTitle = async (req, res) => {
     console.log(error);
   }
 };
+
+export const findNewsByUser = async (req, res) => {
+  try {
+    const id = req.userId;
+    const news = await News.find({ user: id })
+      .sort({ _id: -1 })
+      .populate("user");
+
+    res.status(200).send({
+      results: news.map((item) => ({
+        id: item._id,
+        title: item.title,
+        description: item.description,
+        banner: item.banner,
+        likes: item.likes,
+        comments: item.comments,
+        userName: item.user.userName,
+      })),
+    });
+  } catch (error) {
+    res.status(500).send({ message: "Erro interno ao buscar notícia!" });
+    console.log(error);
+  }
+};
