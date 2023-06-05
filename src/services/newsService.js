@@ -6,3 +6,5 @@ export const newsUpdateService = (id, title, description, banner) =>
     { title, description, banner },
     { rawResult: true }
   );
+
+export const deleteNewsService = (id) => News.findOneAndDelete({ _id: id });

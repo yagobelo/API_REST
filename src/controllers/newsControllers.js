@@ -1,6 +1,9 @@
 import News from "../models/News.js";
 
-import { newsUpdateService } from "../services/newsService.js";
+import {
+  newsUpdateService,
+  deleteNewsService,
+} from "../services/newsService.js";
 
 export const createNews = async (req, res) => {
   try {
@@ -115,6 +118,9 @@ export const topNews = async (req, res) => {
 export const findNewsById = async (req, res) => {
   try {
     const news = await News.findOne({ _id: req.params.id }).populate("user");
+    if (!news) {
+      return res.status(400).send({ message: "Noticia não encontrada!" });
+    }
     res.status(200).json({
       news: {
         id: news._id,
@@ -209,6 +215,30 @@ export const updateNews = async (req, res) => {
     return res.status(200).send({ message: "Noticia atualizada com sucesso!" });
   } catch (error) {
     res.status(500).send({ message: "Erro interno ao atualizar notícia!" });
+    console.log(error);
+  }
+};
+
+export const deleteNews = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const news = await News.findOne({ _id: id }).populate("user");
+
+    if (!news) {
+      return res.status(400).send({ message: "Noticia não encontrada!" });
+    }
+
+    if (news.user._id != req.userId) {
+      return res
+        .status(400)
+        .send({ message: "Você não pode fazer deleção nessa noticia!" });
+    }
+
+    await deleteNewsService(id);
+    return res.status(200).send({ message: "Noticia deletada com sucesso!" });
+  } catch (error) {
+    res.status(500).send({ message: "Erro interno ao deletar notícia!" });
     console.log(error);
   }
 };
