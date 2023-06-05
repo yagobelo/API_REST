@@ -1,5 +1,7 @@
 import News from "../models/News.js";
 
+import { newsUpdateService } from "../services/newsService.js";
+
 export const createNews = async (req, res) => {
   try {
     const { title, description, banner } = req.body;
@@ -182,6 +184,31 @@ export const findNewsByUser = async (req, res) => {
     });
   } catch (error) {
     res.status(500).send({ message: "Erro interno ao buscar notícia!" });
+    console.log(error);
+  }
+};
+
+export const updateNews = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { title, description, banner } = req.body;
+
+    if (!title && !description && !banner) {
+      return res.status(400).send({ message: "Digite algo para atualizar!" });
+    }
+
+    const news = await News.findOne({ _id: id }).populate("user");
+
+    if (news.user._id != req.userId) {
+      return res
+        .status(400)
+        .send({ message: "Você não pode fazer atualização nessa noticia!" });
+    }
+
+    await newsUpdateService(id, title, description, banner);
+    return res.status(200).send({ message: "Noticia atualizada com sucesso!" });
+  } catch (error) {
+    res.status(500).send({ message: "Erro interno ao atualizar notícia!" });
     console.log(error);
   }
 };

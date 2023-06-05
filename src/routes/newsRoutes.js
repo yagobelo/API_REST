@@ -6,6 +6,7 @@ import {
   findNewsById,
   findNewsByTitle,
   findNewsByUser,
+  updateNews,
 } from "../controllers/newsControllers.js";
 import { validCreateNews } from "../middlewares/globalMiddlewares.js";
 import { authMiddleware } from "../middlewares/authMiddlewares.js";
@@ -17,7 +18,7 @@ router.get("/", findAllNews);
 router.get("/top", topNews);
 router.get("/search", findNewsByTitle);
 router.get("/byuser", authMiddleware, findNewsByUser);
-
 router.get("/:id", authMiddleware, findNewsById);
+router.patch("/:id", authMiddleware, updateNews);
 
 export default router;
