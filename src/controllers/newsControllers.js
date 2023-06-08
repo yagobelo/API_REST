@@ -3,6 +3,8 @@ import News from "../models/News.js";
 import {
   newsUpdateService,
   deleteNewsService,
+  likeNewsService,
+  deleteLikeNewsService,
 } from "../services/newsService.js";
 
 export const createNews = async (req, res) => {
@@ -239,6 +241,25 @@ export const deleteNews = async (req, res) => {
     return res.status(200).send({ message: "Noticia deletada com sucesso!" });
   } catch (error) {
     res.status(500).send({ message: "Erro interno ao deletar notícia!" });
+    console.log(error);
+  }
+};
+
+export const likeNews = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const userId = req.userId;
+
+    const newsLiked = await likeNewsService(id, userId);
+
+    if (!newsLiked) {
+      await deleteLikeNewsService(id, userId);
+      return res.status(200).send({ message: "Like removido com sucesso!" });
+    }
+
+    res.send({ message: "Like inserido!" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
     console.log(error);
   }
 };

@@ -8,3 +8,12 @@ export const newsUpdateService = (id, title, description, banner) =>
   );
 
 export const deleteNewsService = (id) => News.findOneAndDelete({ _id: id });
+
+export const likeNewsService = (id, userId) =>
+  News.findOneAndUpdate(
+    { _id: id, "likes.userId": { $nin: [userId] } },
+    { $push: { likes: { userId, created: new Date() } } }
+  );
+
+export const deleteLikeNewsService = (id, userId) =>
+  News.findOneAndUpdate({ _id: id }, { $pull: { likes: { userId } } });
