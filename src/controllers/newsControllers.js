@@ -5,6 +5,8 @@ import {
   deleteNewsService,
   likeNewsService,
   deleteLikeNewsService,
+  addCommentNewsService,
+  deleteCommentNewsService,
 } from "../services/newsService.js";
 
 export const createNews = async (req, res) => {
@@ -258,6 +260,57 @@ export const likeNews = async (req, res) => {
     }
 
     res.send({ message: "Like inserido!" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+    console.log(error);
+  }
+};
+
+export const addCommentNews = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const userId = req.userId;
+    const { comment } = req.body;
+
+    if (!comment) {
+      return res.status(400).send({ message: "Digite um comentario!" });
+    }
+
+    await addCommentNewsService(id, userId, comment);
+    res.send({ message: "Comentario adicionado com sucesso!" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+    console.log(error);
+  }
+};
+
+export const deleteCommentNews = async (req, res) => {
+  try {
+    const { id, idComment } = req.params;
+    const userId = req.userId;
+
+    const commentDeleted = await deleteCommentNewsService(
+      id,
+      idComment,
+      userId
+    );
+
+    const commentFinder = commentDeleted.comments.find(
+      (comment) => comment.idComment === idComment
+    );
+
+    if (!commentFinder) {
+      return res.status(404).send({
+        message: "Comentario não existe!",
+      });
+    }
+
+    if (commentFinder.userId !== userId) {
+      return res.status(400).send({
+        message: "Você não pode deletar o comentario de outros usuarios!",
+      });
+    }
+    res.send({ message: "Comentario deletado com sucesso!" });
   } catch (error) {
     res.status(500).send({ message: error.message });
     console.log(error);
