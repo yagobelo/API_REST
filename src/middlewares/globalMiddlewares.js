@@ -25,12 +25,15 @@ export const validPassword = async (password, verifyInvalidNewUser) => {
 
 export const validCreateNewUser = async (req, res, next) => {
   try {
-    const { userName, email, password } = req.body;
+    const { name, userName, email, password, avatar, background } = req.body;
 
     const verifyInvalidNewUser = [];
 
-    if (!userName) {
+    if (!name) {
       verifyInvalidNewUser.push("Nome de usuario obrigatório!");
+    }
+    if (!userName) {
+      verifyInvalidNewUser.push("Username de usuario obrigatório!");
     }
     if (userName.length < 4) {
       verifyInvalidNewUser.push(
@@ -52,15 +55,21 @@ export const validCreateNewUser = async (req, res, next) => {
     if (password) {
       validPassword(password, verifyInvalidNewUser);
     }
+    if (!avatar) {
+      verifyInvalidNewUser.push("Imagem de avatar é obrigatório!");
+    }
+    if (!background) {
+      verifyInvalidNewUser.push("Imagem de background é obrigatório!");
+    }
 
     if (verifyInvalidNewUser.length > 0) {
-      return res.json({ message: verifyInvalidNewUser });
+      return res.send({ message: verifyInvalidNewUser });
     }
     next();
   } catch (err) {
     res
       .status(500)
-      .json({ message: "erro na validação de criação de usuario!" });
+      .send({ message: "erro na validação de criação de usuario!" });
     console.log(err);
   }
 };
@@ -71,23 +80,21 @@ export const validUpdateUser = async (req, res, next) => {
     const existUser = await User.findOne({ _id: id });
 
     if (!id) {
-      return res.status(400).json({ message: "ID do usuario invalido!" });
+      return res.status(400).send({ message: "ID do usuario invalido!" });
     } else {
       if (!existUser) {
-        return res.status(404).json({
+        return res.status(404).send({
           message: "Não existe nenhum usuario cadastrado com este email!",
         });
       }
     }
 
-    const { userName, password } = req.body;
+    const { name, userName, password, avatar, background } = req.body;
 
     const verifyInvalidNewUser = [];
 
-    if (!userName && !password) {
-      verifyInvalidNewUser.push(
-        "Digite um username ou uma senha para fazer alteração!"
-      );
+    if (!name && !userName && !password && !avatar && background) {
+      verifyInvalidNewUser.push("Digite um campo para fazer alteração!");
     }
     if (userName) {
       const existNameUser = await User.findOne({ userName: userName });
@@ -108,11 +115,11 @@ export const validUpdateUser = async (req, res, next) => {
     }
 
     if (verifyInvalidNewUser.length > 0) {
-      return res.json({ message: verifyInvalidNewUser });
+      return res.send({ message: verifyInvalidNewUser });
     }
     next();
   } catch (err) {
-    res.status(500).json({
+    res.status(500).send({
       message: "erro na validação de atualização de dados de usuario!",
     });
     console.log(err);
@@ -141,7 +148,7 @@ export const validCreateNews = (req, res, next) => {
   }
 
   if (verifyInvalidNewNews.length > 0) {
-    return res.status(400).json(verifyInvalidNewNews);
+    return res.status(400).send(verifyInvalidNewNews);
   }
   next();
 };

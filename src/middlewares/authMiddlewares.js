@@ -30,7 +30,7 @@ export const authMiddleware = (req, res, next) => {
       const user = await User.findOne({ _id: decoded.id });
 
       if (!user || !user.id) {
-        return res.status(401).json({ message: "Token invalido!" });
+        return res.status(401).send({ message: "Token invalido!" });
       }
 
       req.userId = user.id;
@@ -38,7 +38,7 @@ export const authMiddleware = (req, res, next) => {
       return next();
     });
   } catch (error) {
-    res.status(500).json(message("Erro interno ao validar token de login"));
+    res.status(500).send(message("Erro interno ao validar token de login"));
     console.log(error);
   }
 };

@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 const UserSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
   userName: {
     type: String,
     required: true,
@@ -16,6 +20,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
+  },
+  avatar: {
+    type: String,
+    required: true,
+  },
+  background: {
+    type: String,
+    required: true,
   },
 });
 

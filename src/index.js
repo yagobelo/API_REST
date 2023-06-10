@@ -1,10 +1,11 @@
 import express from "express";
-import connectDatabase from "./src/database/db.js";
+import connectDatabase from "./database/db.js";
 import dotenv from "dotenv";
 
-import usersRoutes from "./src/routes/usersRoutes.js";
-import authRoutes from "./src/routes/authRoutes.js";
-import newsRoutes from "./src/routes/newsRoutes.js";
+import usersRoutes from "./routes/usersRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import newsRoutes from "./routes/newsRoutes.js";
+import swaggerRoutes from "./routes/swaggerRoutes.js";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use("/user", usersRoutes);
 app.use("/auth", authRoutes);
 app.use("/news", newsRoutes);
+app.use("/doc", swaggerRoutes);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

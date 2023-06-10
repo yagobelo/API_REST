@@ -8,12 +8,12 @@ export const login = async (req, res) => {
 
     const user = await User.findOne({ email: email }).select("+password");
     if (!user) {
-      return res.status(404).json("Email ou senha incorretos!");
+      return res.status(404).send("Email ou senha incorretos!");
     }
 
     const passwordIsValid = await bcrypt.compare(password, user.password);
     if (!passwordIsValid) {
-      return res.status(400).json({ message: "Email ou senha incorretos!" });
+      return res.status(400).send({ message: "Email ou senha incorretos!" });
     }
 
     const token = jwt.sign({ id: user.id }, process.env.SECRET_JWT, {
@@ -22,7 +22,7 @@ export const login = async (req, res) => {
 
     res.send({ token });
   } catch (error) {
-    res.status(500).json({ message: "Erro interno ao efetuar o login!" });
+    res.status(500).send({ message: "Erro interno ao efetuar o login!" });
     console.log(error);
   }
 };

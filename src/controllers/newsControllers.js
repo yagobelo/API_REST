@@ -18,15 +18,16 @@ export const createNews = async (req, res) => {
       banner,
       user: req.userId,
     };
+
     await News.create(newNews);
     const newsCreated = {
       Titulo: newNews.title,
       Descrição: newNews.description,
     };
 
-    res.status(201).json("Nova notícia criada!");
+    res.status(201).send("Nova notícia criada!");
   } catch (error) {
-    res.status(401).json({ message: "Erro interno ao criar nova notícia!" });
+    res.status(401).send({ message: "Erro interno ao criar nova notícia!" });
     console.log(error);
   }
 };
@@ -66,7 +67,7 @@ export const findAllNews = async (req, res) => {
         : null;
 
     if (!news) {
-      return res.status(400).json({ message: "Nenhuma noticia encontrada!" });
+      return res.status(400).send({ message: "Nenhuma noticia encontrada!" });
     }
     res.status(200).send({
       nextUrl,
@@ -81,13 +82,15 @@ export const findAllNews = async (req, res) => {
         banner: item.banner,
         likes: item.likes,
         comments: item.comments,
-        userName: item.user.userName,
+        name: item.user.name,
+        username: item.user.userName,
+        userAvatar: item.user.avatar,
       })),
     });
   } catch (error) {
     res
       .status(401)
-      .json({ message: "Erro interno ao buscar todas as notícias!" });
+      .send({ message: "Erro interno ao buscar todas as notícias!" });
     console.log(error);
   }
 };
@@ -99,7 +102,7 @@ export const topNews = async (req, res) => {
     if (!news) {
       res
         .status(400)
-        .json({ message: "Não foi possivel encontrar a notícia!" });
+        .send({ message: "Não foi possivel encontrar a notícia!" });
     }
 
     res.status(200).send({
@@ -110,11 +113,13 @@ export const topNews = async (req, res) => {
         banner: news.banner,
         likes: news.likes,
         comments: news.comments,
-        userName: news.user.userName,
+        name: news.user.name,
+        username: news.user.userName,
+        userAvatar: news.user.avatar,
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Erro interno ao buscar notícia!" });
+    res.status(500).send({ message: "Erro interno ao buscar notícia!" });
     console.log(error);
   }
 };
@@ -125,7 +130,7 @@ export const findNewsById = async (req, res) => {
     if (!news) {
       return res.status(400).send({ message: "Noticia não encontrada!" });
     }
-    res.status(200).json({
+    res.status(200).send({
       news: {
         id: news._id,
         title: news.title,
@@ -133,11 +138,13 @@ export const findNewsById = async (req, res) => {
         banner: news.banner,
         likes: news.likes,
         comments: news.comments,
-        userName: news.user.userName,
+        name: news.user.name,
+        username: news.user.userName,
+        userAvatar: news.user.avatar,
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Erro interno ao buscar notícia!" });
+    res.status(500).send({ message: "Erro interno ao buscar notícia!" });
     console.log(error);
   }
 };
@@ -154,7 +161,7 @@ export const findNewsByTitle = async (req, res) => {
     if (!news) {
       res
         .status(400)
-        .json({ message: "Não existe nenhuma notícia com esse titulo!" });
+        .send({ message: "Não existe nenhuma notícia com esse titulo!" });
     }
 
     res.status(200).send({
@@ -165,11 +172,13 @@ export const findNewsByTitle = async (req, res) => {
         banner: item.banner,
         likes: item.likes,
         comments: item.comments,
-        userName: item.user.userName,
+        name: item.user.name,
+        username: item.user.userName,
+        userAvatar: item.user.avatar,
       })),
     });
   } catch (error) {
-    res.status(500).json({ message: "Erro interno ao buscar notícia!" });
+    res.status(500).send({ message: "Erro interno ao buscar notícia!" });
     console.log(error);
   }
 };
@@ -189,7 +198,9 @@ export const findNewsByUser = async (req, res) => {
         banner: item.banner,
         likes: item.likes,
         comments: item.comments,
-        userName: item.user.userName,
+        name: item.user.name,
+        username: item.user.userName,
+        userAvatar: item.user.avatar,
       })),
     });
   } catch (error) {
