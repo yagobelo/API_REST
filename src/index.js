@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import usersRoutes from "./routes/usersRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import newsRoutes from "./routes/newsRoutes.js";
-import swaggerRoutes from "./routes/swaggerRoutes.js";
+import swaggerRoutes from "./routes/swaggerRoutes.cjs";
 
 dotenv.config();
 
