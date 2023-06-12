@@ -1,12 +1,11 @@
-import User from "../models/User.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import { loginService, generateToken } from "../services/authService.js";
 
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email: email }).select("+password");
+    const user = await loginService(email);
     if (!user) {
       return res.status(404).send("Email ou senha incorretos!");
     }
@@ -16,9 +15,7 @@ export const login = async (req, res) => {
       return res.status(400).send({ message: "Email ou senha incorretos!" });
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.SECRET_JWT, {
-      expiresIn: 43200,
-    });
+    const token = generateToken(user.id);
 
     res.send({ token });
   } catch (error) {

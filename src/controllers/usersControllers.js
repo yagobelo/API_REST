@@ -1,17 +1,13 @@
-import User from "../models/User.js";
+import {
+  createUserService,
+  findAllUsersService,
+  findUserByIdService,
+  updateUserService,
+} from "../services/userService.js";
 
 export const createUser = async (req, res) => {
   try {
-    const { name, userName, email, password, avatar, background } = req.body;
-    const newUser = {
-      name,
-      userName,
-      email,
-      password,
-      avatar,
-      background,
-    };
-    await User.create(newUser);
+    const newUser = await createUserService(req.body);
     const userCreated = {
       Name: newUser.name,
       UserName: newUser.userName,
@@ -28,7 +24,7 @@ export const createUser = async (req, res) => {
 
 export const findAllUsers = async (req, res) => {
   try {
-    const allUsers = await User.find();
+    const allUsers = await findAllUsersService();
     if (!allUsers) {
       return res.status(404).send({ message: "Nenhum usuario encontrado!" });
     }
@@ -41,7 +37,8 @@ export const findAllUsers = async (req, res) => {
 
 export const findUserById = async (req, res) => {
   try {
-    const userFindById = await User.findOne({ _id: req.params.id });
+    const id = req.params.id;
+    const userFindById = await findUserByIdService(id);
     res.status(200).send(userFindById);
   } catch (error) {
     res.status(404).send({ message: "Erro ao buscar usuarios" });
@@ -52,16 +49,10 @@ export const findUserById = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const id = req.params.id;
-    const { name, userName, password, avatar, background } = req.body;
-    const user = {
-      name,
-      userName,
-      password,
-      avatar,
-      background,
-    };
-    await User.findOneAndUpdate({ _id: id }, user);
-    res.status(200).send({ message: "Alterações feitas:", user });
+
+    await updateUserService(id, req.body);
+
+    res.status(200).send({ message: "Alterações feitas com sucesso!" });
   } catch (error) {
     res.status(400).send({ message: "Erro interno ao atualizar usuario!" });
     console.log(error);

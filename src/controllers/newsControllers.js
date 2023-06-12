@@ -1,7 +1,13 @@
 import News from "../models/News.js";
 
 import {
-  newsUpdateService,
+  createNewsService,
+  findAllNewsService,
+  topNewsService,
+  findNewsByIdService,
+  findNewsByTitleService,
+  findNewsByUserService,
+  updateNewsService,
   deleteNewsService,
   likeNewsService,
   deleteLikeNewsService,
@@ -19,11 +25,7 @@ export const createNews = async (req, res) => {
       user: req.userId,
     };
 
-    await News.create(newNews);
-    const newsCreated = {
-      Titulo: newNews.title,
-      Descrição: newNews.description,
-    };
+    await createNewsService(newNews);
 
     res.status(201).send("Nova notícia criada!");
   } catch (error) {
@@ -45,11 +47,7 @@ export const findAllNews = async (req, res) => {
       offset = 0;
     }
 
-    const news = await News.find()
-      .sort({ _id: -1 })
-      .skip(offset)
-      .limit(limit)
-      .populate("user");
+    const news = await findAllNewsService(offset, limit);
 
     const totalCountNews = await News.countDocuments();
     const currentyUrl = req.baseUrl;
@@ -97,7 +95,7 @@ export const findAllNews = async (req, res) => {
 
 export const topNews = async (req, res) => {
   try {
-    const news = await News.findOne().sort({ _id: -1 }).populate("user");
+    const news = await topNewsService();
 
     if (!news) {
       res
@@ -126,7 +124,8 @@ export const topNews = async (req, res) => {
 
 export const findNewsById = async (req, res) => {
   try {
-    const news = await News.findOne({ _id: req.params.id }).populate("user");
+    const id = req.params.id;
+    const news = await findNewsByIdService(id);
     if (!news) {
       return res.status(400).send({ message: "Noticia não encontrada!" });
     }
@@ -152,11 +151,7 @@ export const findNewsById = async (req, res) => {
 export const findNewsByTitle = async (req, res) => {
   try {
     const { title } = req.query;
-    const news = await News.find({
-      title: { $regex: `${title || ""}`, $options: "i" },
-    })
-      .sort({ _id: -1 })
-      .populate("user");
+    const news = await findNewsByTitleService(title);
 
     if (!news) {
       res
@@ -186,9 +181,7 @@ export const findNewsByTitle = async (req, res) => {
 export const findNewsByUser = async (req, res) => {
   try {
     const id = req.userId;
-    const news = await News.find({ user: id })
-      .sort({ _id: -1 })
-      .populate("user");
+    const news = await findNewsByUserService(id);
 
     res.status(200).send({
       results: news.map((item) => ({
@@ -226,7 +219,7 @@ export const updateNews = async (req, res) => {
         .send({ message: "Você não pode fazer atualização nessa noticia!" });
     }
 
-    await newsUpdateService(id, title, description, banner);
+    await updateNewsService(id, title, description, banner);
     return res.status(200).send({ message: "Noticia atualizada com sucesso!" });
   } catch (error) {
     res.status(500).send({ message: "Erro interno ao atualizar notícia!" });
